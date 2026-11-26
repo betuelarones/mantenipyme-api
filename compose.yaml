@@ -33,7 +33,7 @@ services:
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
       JWT_SECRET: ${JWT_SECRET:-}
       PORT: 3000
-    command: sh -c "npx prisma db push && npm run start:prod"
+    command: sh -c "npx prisma db push && npm run db:seed && npm run start:prod"
     ports:
       - "3000:3000"
     depends_on:
