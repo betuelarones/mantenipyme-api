@@ -6,3 +6,102 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+enum Rol {
+  MANAGER
+  OPERATOR
+  TECHNICIAN
+}
+
+enum Prioridad {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum EstadoIncidencia {
+  OPEN
+  ASSIGNED
+  CLOSED
+}
+
+model Usuario {
+  id                 String          @id @default(cuid())
+  fullName           String
+  email              String          @unique
+  passwordHash       String
+  role               Rol
+  active             Boolean         @default(true)
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  equipment           Equipo[]        @relation("EquipmentResponsible")
+  maintenancePlans    Plan[]          @relation("PlanResponsible")
+  reportedIncidents   Incidencia[]    @relation("IncidentReporter")
+  assignedIncidents   Incidencia[]    @relation("IncidentTechnician")
+  interventions       Intervencion[]
+}
+
+model Equipo {
+  id             String       @id @default(cuid())
+  name           String
+  code           String       @unique
+  area           String
+  responsibleId  String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  responsible    Usuario?     @relation("EquipmentResponsible", fields: [responsibleId], references: [id], onDelete: SetNull)
+  plans          Plan[]
+  incidents      Incidencia[]
+
+  @@index([name])
+}
+
+model Plan {
+  id             String       @id @default(cuid())
+  name           String
+  equipmentId    String
+  responsibleId  String?
+  dueAt          DateTime
+  reminderDays   Int          @default(7)
+  completedAt    DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  equipment      Equipo       @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  responsible    Usuario?     @relation("PlanResponsible", fields: [responsibleId], references: [id], onDelete: SetNull)
+
+  @@index([dueAt, completedAt])
+  @@index([equipmentId])
+}
+
+model Incidencia {
+  id             String            @id @default(cuid())
+  equipmentId    String
+  reporterId     String
+  assignedToId   String?
+  symptom        String
+  priority       Prioridad
+  status         EstadoIncidencia  @default(OPEN)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  equipment      Equipo            @relation(fields: [equipmentId], references: [id], onDelete: Restrict)
+  reporter       Usuario           @relation("IncidentReporter", fields: [reporterId], references: [id], onDelete: Restrict)
+  assignedTo     Usuario?          @relation("IncidentTechnician", fields: [assignedToId], references: [id], onDelete: SetNull)
+  interventions  Intervencion[]
+
+  @@index([status, createdAt])
+  @@index([assignedToId, status])
+  @@index([equipmentId])
+}
+
+model Intervencion {
+  id              String      @id @default(cuid())
+  incidentId      String
+  technicianId    String
+  action          String
+  durationMinutes Int?
+  occurredAt      DateTime    @default(now())
+  incident        Incidencia  @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+  technician      Usuario     @relation(fields: [technicianId], references: [id], onDelete: Restrict)
+
+  @@index([incidentId, occurredAt])
+}

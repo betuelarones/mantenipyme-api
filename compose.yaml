@@ -29,6 +29,11 @@ services:
     restart: unless-stopped
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-mantenipyme}:${POSTGRES_PASSWORD:-mantenipyme_dev}@db:5432/${POSTGRES_DB:-mantenipyme}?schema=public
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      JWT_SECRET: ${JWT_SECRET:-}
+      PORT: 3000
+    command: sh -c "npx prisma db push && npm run start:prod"
     ports:
       - "3000:3000"
     depends_on:

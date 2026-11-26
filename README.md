@@ -1,38 +1,33 @@
 # Mantenipyme API
 
-MVP local en NestJS con módulos por dominio y Prisma como única capa de acceso a datos.
+NestJS API for the ManteniPyme maintenance management MVP.
 
-## Inicio con Docker en WSL
+## Run with Docker
 
-Desde WSL, entra al backend y levanta la API y PostgreSQL:
+From this directory, build and start the API and PostgreSQL:
 
 ```sh
-cd /mnt/c/Backend/Mantemiento/mantenipyme-backend
 docker compose up -d --build
 ```
 
-La API escucha en `http://localhost:3000`. Revisa el estado con `docker compose ps` y los logs de la API con `docker compose logs -f api`. Para detener los servicios, ejecuta `docker compose down`; los datos de PostgreSQL se conservan en `postgres_data`.
+The API is available at `http://localhost:3000`. Check container health with `docker compose ps` and follow API logs with `docker compose logs -f api`. Stop containers with `docker compose down`; PostgreSQL data stays in the `postgres_data` volume.
 
-Para desarrollo sin Docker, instala dependencias, genera Prisma Client con `npm run db:generate` y arranca con `npm run start:dev`.
+## First manager account
 
-## Trabajo en equipo
+Before the first startup, set `ADMIN_EMAIL`, `ADMIN_PASSWORD`, and `JWT_SECRET` in `.env`. On startup, the API creates a MANAGER account only if that email does not exist. There is no public registration, and an existing account's password is never overwritten. Rebuild and restart after setting the values with `docker compose up -d --build`.
 
-- Cada desarrollador crea su propio `.env` copiando `.env.example`. `.env` está excluido de Git: nunca subas credenciales en commits.
-- Usa `DATABASE_URL` para conectar Prisma a PostgreSQL. `compose.yaml` aplica valores de desarrollo por defecto y no requiere `POSTGRES_USER`, `POSTGRES_PASSWORD` ni `POSTGRES_DB` en `.env`.
-- `ADMIN_EMAIL` y `ADMIN_PASSWORD` son credenciales locales de la plataforma, no credenciales de la base de datos. Comparte las contraseñas únicamente por un canal seguro.
-- El esquema Prisma todavía no contiene modelos y el controlador `auth` aún no implementa inicio de sesión ni crea un administrador; definir estas variables no crea una cuenta por sí solo.
+For development outside Docker, run `npm install`, `npm run db:generate`, `npm run db:push`, and `npm run start:dev`.
 
-Si Prisma necesita tablas, primero deben acordarse y añadirse los modelos y migraciones al repositorio antes de ejecutar `npm run db:migrate`.
+## Team setup
 
-Para el MVP, JWT usa una clave aleatoria de proceso si no se define `JWT_SECRET`; los tokens dejan de ser válidos al reiniciar.
+- Each developer keeps a local `.env`, which is ignored by Git. Never commit credentials.
+- `ADMIN_EMAIL` and `ADMIN_PASSWORD` are platform account credentials, not PostgreSQL credentials.
+- The API synchronizes the Prisma schema on container startup; `npm run db:push` does the same for local development.
+- Use a stable, private `JWT_SECRET` so tokens remain valid after restarts.
 
-## Estructura
+## Structure
 
-- `src/auth`: autenticación JWT y DTOs de acceso.
-- `src/users`, `src/equipment`, `src/plans`, `src/incidents`, `src/interventions`, `src/notifications`, `src/metrics`: dominios independientes.
-- `src/common`: guards, decoradores, filtros, enums e interfaces compartidas.
-- `src/prisma`: cliente Prisma compartido.
-- `prisma`: esquema y migraciones.
-
-Los DTOs de los dominios están vacíos a propósito hasta acordar sus campos y reglas de validación.
-# mantenipyme-api
+- `src/auth`: JWT authentication.
+- `src/users`, `src/equipment`, `src/plans`, `src/incidents`, `src/interventions`, `src/metrics`: domain modules.
+- `src/common`: shared guards, decorators, filters, enums and interfaces.
+- `src/prisma` and `prisma`: database client and schema.

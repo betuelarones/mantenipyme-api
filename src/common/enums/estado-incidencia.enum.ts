@@ -1,7 +1,1 @@
-export enum EstadoIncidencia {
-  ABIERTA = 'ABIERTA',
-  ASIGNADA = 'ASIGNADA',
-  EN_PROCESO = 'EN_PROCESO',
-  RESUELTA = 'RESUELTA',
-  CERRADA = 'CERRADA',
-}
+export { EstadoIncidencia } from '@prisma/client';
