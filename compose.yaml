@@ -1,3 +1,5 @@
+name: mantenipyme
+
 services:
   db:
     image: postgres:17-alpine
@@ -19,6 +21,19 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-mantenipyme}:${POSTGRES_PASSWORD:-mantenipyme_dev}@db:5432/${POSTGRES_DB:-mantenipyme}?schema=public
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
 
 volumes:
   postgres_data:
