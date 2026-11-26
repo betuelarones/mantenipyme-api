@@ -19,7 +19,7 @@ La API escucha en `http://localhost:3000`. Para el MVP, JWT usa una clave aleato
 ## Estructura
 
 - `src/auth`: autenticación JWT y DTOs de acceso.
-- `src/usuarios`, `equipos`, `planes`, `incidencias`, `intervenciones`, `notificaciones`, `metricas`: dominios independientes.
+- `src/users`, `src/equipment`, `src/plans`, `src/incidents`, `src/interventions`, `src/notifications`, `src/metrics`: dominios independientes.
 - `src/common`: guards, decoradores, filtros, enums e interfaces compartidas.
 - `src/prisma`: cliente Prisma compartido.
 - `prisma`: esquema y migraciones.
