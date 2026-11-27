@@ -5,8 +5,11 @@ import { AppModule } from './app.module.js';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter.js';
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
+    const allowedOrigins = process.env.FRONTEND_URL?.split(',')
+        .map((origin) => origin.trim())
+        .filter(Boolean);
     app.enableCors({
-        origin: process.env.FRONTEND_URL?.split(',') ?? true,
+        origin: allowedOrigins?.length ? allowedOrigins : true,
         allowedHeaders: ['Content-Type', 'Authorization'],
     });
     app.useGlobalPipes(new ValidationPipe({
