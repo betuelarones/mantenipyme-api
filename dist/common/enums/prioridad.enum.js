@@ -1,8 +1,2 @@
-export var Prioridad;
-(function (Prioridad) {
-    Prioridad["BAJA"] = "BAJA";
-    Prioridad["MEDIA"] = "MEDIA";
-    Prioridad["ALTA"] = "ALTA";
-    Prioridad["URGENTE"] = "URGENTE";
-})(Prioridad || (Prioridad = {}));
+export { Prioridad } from '@prisma/client';
 //# sourceMappingURL=prioridad.enum.js.map

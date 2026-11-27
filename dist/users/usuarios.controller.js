@@ -4,11 +4,61 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { Controller } from '@nestjs/common';
-let UsuariosController = class UsuariosController {
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { Roles } from '../common/decorators/roles.decorator.js';
+import { Rol } from '../common/enums/rol.enum.js';
+import { RolesGuard } from '../common/guards/roles.guard.js';
+import { CreateUsuarioDto } from './dto/create-usuario.dto.js';
+import { UpdateUsuarioDto } from './dto/update-usuario.dto.js';
+import { UsuariosService } from './usuarios.service.js';
+let UsuariosController = class UsuariosController {
+    usuariosService;
+    constructor(usuariosService) {
+        this.usuariosService = usuariosService;
+    }
+    list() {
+        return this.usuariosService.list();
+    }
+    create(body) {
+        return this.usuariosService.create(body);
+    }
+    update(id, body) {
+        return this.usuariosService.update(id, body);
+    }
+};
+__decorate([
+    Get(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], UsuariosController.prototype, "list", null);
+__decorate([
+    Post(),
+    __param(0, Body()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [CreateUsuarioDto]),
+    __metadata("design:returntype", void 0)
+], UsuariosController.prototype, "create", null);
+__decorate([
+    Patch(':id'),
+    __param(0, Param('id')),
+    __param(1, Body()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, UpdateUsuarioDto]),
+    __metadata("design:returntype", void 0)
+], UsuariosController.prototype, "update", null);
 UsuariosController = __decorate([
-    Controller('usuarios')
+    Controller('usuarios'),
+    UseGuards(AuthGuard('jwt'), RolesGuard),
+    Roles(Rol.MANAGER),
+    __metadata("design:paramtypes", [UsuariosService])
 ], UsuariosController);
 export { UsuariosController };
 //# sourceMappingURL=usuarios.controller.js.map

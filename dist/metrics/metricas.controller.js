@@ -4,11 +4,53 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { Controller } from '@nestjs/common';
-let MetricasController = class MetricasController {
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+import { Controller, Get, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { Roles } from '../common/decorators/roles.decorator.js';
+import { Rol } from '../common/enums/rol.enum.js';
+import { RolesGuard } from '../common/guards/roles.guard.js';
+import { MetricasService } from './metricas.service.js';
+let MetricasController = class MetricasController {
+    metricasService;
+    constructor(metricasService) {
+        this.metricasService = metricasService;
+    }
+    summary() {
+        return this.metricasService.summary();
+    }
+    summaryAlias() {
+        return this.metricasService.summary();
+    }
+    downtime() {
+        return this.metricasService.downtime();
+    }
+};
+__decorate([
+    Get(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], MetricasController.prototype, "summary", null);
+__decorate([
+    Get('summary'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], MetricasController.prototype, "summaryAlias", null);
+__decorate([
+    Get('downtime'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], MetricasController.prototype, "downtime", null);
 MetricasController = __decorate([
-    Controller('metricas')
+    Controller('metricas'),
+    UseGuards(AuthGuard('jwt'), RolesGuard),
+    Roles(Rol.MANAGER),
+    __metadata("design:paramtypes", [MetricasService])
 ], MetricasController);
 export { MetricasController };
 //# sourceMappingURL=metricas.controller.js.map
